@@ -1,0 +1,30 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="EditExperimentRunScenarioTable.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="URL" Type="System.String" Scope="User">
+      <Value Profile="(Default)">https://mdtdemoserver.internal.simioportal.com</Value>
+    </Setting>
+    <Setting Name="PersonalAccessToken" Type="System.String" Scope="User">
+      <Value Profile="(Default)">eyJ1IjoiZ3dpcnRoQHNpbWlvLmNvbSIsInQiOiIzcFFFSWg4ZVBhZnRWRUhrVTV5ZmUzVTMram5xSUVoWVZXV3kzb0tDSjNHT1pRUTNKbC80Vk9aMzFOZDBBQ3pGQXR3NzRhSEMxM0tjRDVqUHhqcU1SQT09In0=</Value>
+    </Setting>
+    <Setting Name="AuthenticationType" Type="System.String" Scope="User">
+      <Value Profile="(Default)">None</Value>
+    </Setting>
+    <Setting Name="Domain" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="UserName" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="Password" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="ProjectName" Type="System.String" Scope="User">
+      <Value Profile="(Default)">SchedulingLaborEfficiencies</Value>
+    </Setting>
+    <Setting Name="RunSchedulePlanScenarioName" Type="System.String" Scope="User">
+      <Value Profile="(Default)">_ModelValues</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>
