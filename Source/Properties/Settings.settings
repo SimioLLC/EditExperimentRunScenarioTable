@@ -3,10 +3,10 @@
   <Profiles />
   <Settings>
     <Setting Name="URL" Type="System.String" Scope="User">
-      <Value Profile="(Default)">https://test.internal.simioportal.com:8443/</Value>
+      <Value Profile="(Default)">https://YourSimioPortalURL</Value>
     </Setting>
     <Setting Name="PersonalAccessToken" Type="System.String" Scope="User">
-      <Value Profile="(Default)">eyJ1IjoiZ3dpcnRoQHNpbWlvLmNvbSIsInQiOiI5NVpNS0s4dThiZTdOUzZGaDQzVkZ5ck5CVFg2MnFzWW1zcklLTkhzU1d5UTVoWG4zR1dFemFZWFhWRmh4Wk1oQmxLWlZSVTJMRzU5QnovZ2NGeVJEZz09In0=</Value>
+      <Value Profile="(Default)">CreateWebAPITokenAndAddItHere</Value>
     </Setting>
     <Setting Name="AuthenticationType" Type="System.String" Scope="User">
       <Value Profile="(Default)">None</Value>

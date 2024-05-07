@@ -25,7 +25,7 @@ namespace EditExperimentRunScenarioTable.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("https://test.internal.simioportal.com:8443/")]
+        [global::System.Configuration.DefaultSettingValueAttribute("https://YourSimioPortalURL")]
         public string URL {
             get {
                 return ((string)(this["URL"]));
@@ -37,8 +37,7 @@ namespace EditExperimentRunScenarioTable.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("eyJ1IjoiZ3dpcnRoQHNpbWlvLmNvbSIsInQiOiI5NVpNS0s4dThiZTdOUzZGaDQzVkZ5ck5CVFg2MnFzW" +
-            "W1zcklLTkhzU1d5UTVoWG4zR1dFemFZWFhWRmh4Wk1oQmxLWlZSVTJMRzU5QnovZ2NGeVJEZz09In0=")]
+        [global::System.Configuration.DefaultSettingValueAttribute("CreateWebAPITokenAndAddItHere")]
         public string PersonalAccessToken {
             get {
                 return ((string)(this["PersonalAccessToken"]));
