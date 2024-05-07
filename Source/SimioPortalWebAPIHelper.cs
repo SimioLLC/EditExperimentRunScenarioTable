@@ -27,7 +27,9 @@ namespace EditExperimentRunScenarioTable
         internal static string UserName = Properties.Settings.Default.UserName;
         internal static string Password = Properties.Settings.Default.Password;
         internal static string ProjectName = Properties.Settings.Default.ProjectName;
-        internal static string RunSchedulePlanScenarioName = Properties.Settings.Default.RunSchedulePlanScenarioName;
+        internal static string ModelName = Properties.Settings.Default.ModelName;
+        internal static string ExperimentName = Properties.Settings.Default.ExperimentName;
+        internal static string ScenarioName = Properties.Settings.Default.ScenarioName;
 
         internal static void setCredentials()
         {
@@ -56,9 +58,10 @@ namespace EditExperimentRunScenarioTable
 
         internal static void obtainBearerToken()
         {
-            var client = new RestClient(Uri + "/api/RequestToken");
+            var client = new RestClient(Uri);
             client.Timeout = -1;
-            var request = new RestRequest(Method.POST);
+            var request = new RestRequest("/api/auth", Method.POST);
+            request.AddHeader("Accept", "application/json");
             if (String.IsNullOrWhiteSpace(AuthenticationType) == false && AuthenticationType.ToLower() != "none")
             {
                 if (UseDefaultCredentials)
@@ -69,27 +72,25 @@ namespace EditExperimentRunScenarioTable
                 {
                     client.Authenticator = new RestSharp.Authenticators.NtlmAuthenticator(Credentials);
                 }
-            }
-            request.AddHeader("Content-Type", "application/json");
-            request.AddParameter("application/json", "{\n    \"PersonalAccessToken\": \"" + PersonalAccessToken + "\",\n    \"Purpose\": \"PublicAPI\"\n}", ParameterType.RequestBody);
+            };
+            request.AddJsonBody("{\n    \"personalAccessToken\": \"" + PersonalAccessToken + "\"    \n}");
             IRestResponse response = client.Execute(request);
             if (response.StatusCode != System.Net.HttpStatusCode.OK)
             {
-                if (response.ErrorMessage != null) throw new Exception(response.ErrorMessage);
-                else throw new Exception(response.Content);
+                if (response.ErrorMessage != null) throw new Exception(response.StatusDescription + " : " + response.ErrorMessage);
+                else throw new Exception(response.StatusDescription + " : " + response.Content);
             }
             var xmlDoc = responseToXML(response.Content);
-            XmlNodeList node = xmlDoc.GetElementsByTagName("Token");
+            XmlNodeList node = xmlDoc.GetElementsByTagName("token");
             Token = node[0].InnerText;
             Console.WriteLine("Bearer Token Received Successfully");
         }
 
-        internal static Int32[] findExperimentIds()
+        internal static Int32 findModelId()
         {
-            var client = new RestClient(Uri + "/api/Query");
+            var client = new RestClient(Uri);
             client.Timeout = -1;
-            var request = new RestRequest(Method.POST);
-            request.AddHeader("Content-Type", "multipart/form-data");
+            var request = new RestRequest("/api/v1/models?owned_models=true", Method.GET);
             request.AddHeader("Authorization", "Bearer " + Token);
             if (String.IsNullOrWhiteSpace(AuthenticationType) == false && AuthenticationType.ToLower() != "none")
             {
@@ -102,47 +103,120 @@ namespace EditExperimentRunScenarioTable
                     client.Authenticator = new RestSharp.Authenticators.NtlmAuthenticator(Credentials);
                 }
             }
-            request.AlwaysMultipartFormData = true;
-            request.AddParameter("Type", "GetExperimentRuns");
-            request.AddParameter("Query", "{\"ReturnNonOwnedRuns\":false}");
+            request.AddHeader("Accept", "application/json");
             IRestResponse response = client.Execute(request);
             if (response.StatusCode != System.Net.HttpStatusCode.OK)
             {
-                if (response.ErrorMessage != null) throw new Exception(response.ErrorMessage);
-                else throw new Exception(response.Content);
+                if (response.ErrorMessage != null) throw new Exception(response.StatusDescription + " : " + response.ErrorMessage);
+                else throw new Exception(response.StatusDescription + " : " + response.Content);
             }
             var xmlDoc = responseToXML(response.Content);
-            Int32[] returnInt = new int[2];
+            Int32 returnInt = 0;
             var dataNodes = xmlDoc.SelectSingleNode("data");
             foreach (XmlNode itemNodes in dataNodes)
             {
-                XmlNodeList projectNode = ((XmlElement)itemNodes).GetElementsByTagName("ProjectName");
-                XmlNodeList expRunDescriptionNode = ((XmlElement)itemNodes).GetElementsByTagName("Description");
-                XmlNodeList scenarioNamesNode = ((XmlElement)itemNodes).GetElementsByTagName("ScenarioNames");
-                if (ProjectName == projectNode[0].InnerText &&
-                    RunSchedulePlanScenarioName == scenarioNamesNode[0].InnerXml) 
+                XmlNodeList projectNode = ((XmlElement)itemNodes).GetElementsByTagName("projectName");
+                if (ProjectName == projectNode[0].InnerText)
                 {
-                    XmlNodeList idNode = ((XmlElement)itemNodes).GetElementsByTagName("Id");
-                    XmlNodeList experimentIdNode = ((XmlElement)itemNodes).GetElementsByTagName("ExperimentId");
-                    returnInt[0] = Convert.ToInt32(idNode[0].InnerXml);
-                    returnInt[1] = Convert.ToInt32(experimentIdNode[0].InnerXml);
+                    XmlNodeList idNode = ((XmlElement)itemNodes).GetElementsByTagName("id");
+                    Int32 tempReturnInt = Convert.ToInt32(idNode[0].InnerXml);
+                    if (tempReturnInt > returnInt)
+                        returnInt = tempReturnInt;
+                }
+            }
+            return returnInt;
+        }
+
+        internal static Int32 findExperimentId(Int32 modelId)
+        {
+            var client = new RestClient(Uri);
+            client.Timeout = -1;
+            var request = new RestRequest("/api/v1/experiments?model_id=" + modelId.ToString(), Method.GET);
+            request.AddHeader("Authorization", "Bearer " + Token);
+            if (String.IsNullOrWhiteSpace(AuthenticationType) == false && AuthenticationType.ToLower() != "none")
+            {
+                if (UseDefaultCredentials)
+                {
+                    request.UseDefaultCredentials = true;
+                }
+                else
+                {
+                    client.Authenticator = new RestSharp.Authenticators.NtlmAuthenticator(Credentials);
+                }
+            }
+            request.AddHeader("Accept", "application/json");
+            IRestResponse response = client.Execute(request);
+            if (response.StatusCode != System.Net.HttpStatusCode.OK)
+            {
+                if (response.ErrorMessage != null) throw new Exception(response.StatusDescription + " : " + response.ErrorMessage);
+                else throw new Exception(response.StatusDescription + " : " + response.Content);
+            }
+            var xmlDoc = responseToXML(response.Content);
+            Int32 returnInt = 0;
+            var dataNodes = xmlDoc.SelectSingleNode("data");
+            foreach (XmlNode itemNodes in dataNodes)
+            {
+                XmlNodeList projectNode = ((XmlElement)itemNodes).GetElementsByTagName("projectName");
+                XmlNodeList modelIdNode = ((XmlElement)itemNodes).GetElementsByTagName("modelId");
+                XmlNodeList nameNode = ((XmlElement)itemNodes).GetElementsByTagName("name");
+                if (ProjectName == projectNode[0].InnerText && modelId.ToString() == modelIdNode[0].InnerText &&
+                     (ExperimentName == nameNode[0].InnerXml))
+                {
+                    XmlNodeList idNode = ((XmlElement)itemNodes).GetElementsByTagName("id");
+                    returnInt = Convert.ToInt32(idNode[0].InnerXml);
                     break;
                 }
             }
-            if (returnInt[1] == 0)
+            return returnInt;
+        }
+
+        internal static Int32 findExperimentRunId(Int32 experimentId)
+        {
+            var client = new RestClient(Uri);
+            client.Timeout = -1;
+            var request = new RestRequest("/api/v1/runs?experiment_id=" + experimentId.ToString(), Method.GET);
+            request.AddHeader("Authorization", "Bearer " + Token);
+            if (String.IsNullOrWhiteSpace(AuthenticationType) == false && AuthenticationType.ToLower() != "none")
             {
-                throw new Exception("Experiment Run Cannot Be Found");
+                if (UseDefaultCredentials)
+                {
+                    request.UseDefaultCredentials = true;
+                }
+                else
+                {
+                    client.Authenticator = new RestSharp.Authenticators.NtlmAuthenticator(Credentials);
+                }
+            }
+            request.AddHeader("Accept", "application/json");
+            IRestResponse response = client.Execute(request);
+            if (response.StatusCode != System.Net.HttpStatusCode.OK)
+            {
+                if (response.ErrorMessage != null) throw new Exception(response.StatusDescription + " : " + response.ErrorMessage);
+                else throw new Exception(response.StatusDescription + " : " + response.Content);
+            }
+            var xmlDoc = responseToXML(response.Content);
+            Int32 returnInt = 0;
+            var dataNodes = xmlDoc.SelectSingleNode("data");
+            foreach (XmlNode itemNodes in dataNodes)
+            {
+                XmlNodeList nameNode = ((XmlElement)itemNodes).GetElementsByTagName("scenarioNames");
+                if (ScenarioName == nameNode[0].InnerXml)
+                {
+                    XmlNodeList idNode = ((XmlElement)itemNodes).GetElementsByTagName("id");
+                    returnInt = Convert.ToInt32(idNode[0].InnerXml);
+                    break;
+                }                
             }
             return returnInt;
         }
 
         internal static XmlDocument getExperimentRunTableRowData(Int32 experimentRunId, string tableName)
         {
-            var client = new RestClient(Uri + "/api/Query");
+            var client = new RestClient(Uri);
             client.Timeout = -1;
-            var request = new RestRequest(Method.POST);
-            request.AddHeader("Content-Type", "multipart/form-data");
+            var request = new RestRequest("/api/v1/runs/" + experimentRunId.ToString() + "/scenarios/" + ScenarioName + "/table-data/" + tableName, Method.GET);
             request.AddHeader("Authorization", "Bearer " + Token);
+
             if (String.IsNullOrWhiteSpace(AuthenticationType) == false && AuthenticationType.ToLower() != "none")
             {
                 if (UseDefaultCredentials)
@@ -154,9 +228,6 @@ namespace EditExperimentRunScenarioTable
                     client.Authenticator = new RestSharp.Authenticators.NtlmAuthenticator(Credentials);
                 }
             }
-            request.AlwaysMultipartFormData = true;
-            request.AddParameter("Type", "GetExperimentRunTableRowData");
-            request.AddParameter("Query", "{\"ExperimentRunId\": " + experimentRunId.ToString() + ",\"ScenarioName\": \"" + RunSchedulePlanScenarioName + "\",\"TableName\": \"" + tableName + "\"}");
             IRestResponse response = client.Execute(request);
             if (response.StatusCode != System.Net.HttpStatusCode.OK)
             {
@@ -166,12 +237,11 @@ namespace EditExperimentRunScenarioTable
             return responseToXML(response.Content);            
         }
 
-        internal static XmlDocument getModelTableSchema(Int32 experimentRunId)
+        internal static XmlDocument getModelTableSchema(Int32 modelId)
         {
-            var client = new RestClient(Uri + "/api/Query");
+            var client = new RestClient(Uri);
             client.Timeout = -1;
-            var request = new RestRequest(Method.POST);
-            request.AddHeader("Content-Type", "multipart/form-data");
+            var request = new RestRequest("/api/v1/models/" + modelId.ToString() + "/table-schemas", Method.GET);
             request.AddHeader("Authorization", "Bearer " + Token);
             if (String.IsNullOrWhiteSpace(AuthenticationType) == false && AuthenticationType.ToLower() != "none")
             {
@@ -184,9 +254,6 @@ namespace EditExperimentRunScenarioTable
                     client.Authenticator = new RestSharp.Authenticators.NtlmAuthenticator(Credentials);
                 }
             }
-            request.AlwaysMultipartFormData = true;
-            request.AddParameter("Type", "GetModelTableSchema");
-            request.AddParameter("Query", "{\"ExperimentRunId\": " + experimentRunId.ToString() + "}");
             IRestResponse response = client.Execute(request);
             if (response.StatusCode != System.Net.HttpStatusCode.OK)
             {
@@ -196,13 +263,13 @@ namespace EditExperimentRunScenarioTable
             return responseToXML(response.Content);
         }
 
-        internal static void insertExperimentRunScenarioTableRows(Int32 experimenRuntId, Int32 rowIndex, string tableName)
+        internal static void insertExperimentRunScenarioTableRows(Int32 experimentRunId, Int32 rowIndex, string tableName)
         {
-            var client = new RestClient(Uri + "/api/Command");
+            var client = new RestClient(Uri);
             client.Timeout = -1;
-            var request = new RestRequest(Method.POST);
-            request.AddHeader("Content-Type", "multipart/form-data");
+            var request = new RestRequest("/api/v1/runs/" + experimentRunId.ToString() + "/scenarios/" + ScenarioName + "/table-data/" + tableName + "/rows/" + rowIndex.ToString(), Method.POST);
             request.AddHeader("Authorization", "Bearer " + Token);
+
             if (String.IsNullOrWhiteSpace(AuthenticationType) == false && AuthenticationType.ToLower() != "none")
             {
                 if (UseDefaultCredentials)
@@ -214,35 +281,22 @@ namespace EditExperimentRunScenarioTable
                     client.Authenticator = new RestSharp.Authenticators.NtlmAuthenticator(Credentials);
                 }
             }
-            request.AlwaysMultipartFormData = true;
-            request.AddParameter("Type", "InsertExperimentRunScenarioTableRow");
-            request.AddParameter("Command", "{\"ExperimentRunId\": " + experimenRuntId.ToString() + ",\"RowIndex\": " + rowIndex.ToString() + ",\"ScenarioName\": \"" + RunSchedulePlanScenarioName + "\",\"TableName\": \"" + tableName + "\"}");
 
             IRestResponse response = client.Execute(request);
-            if (response.StatusCode != System.Net.HttpStatusCode.OK)
+            if (response.StatusCode != System.Net.HttpStatusCode.Created)
             {
                 if (response.ErrorMessage != null) throw new Exception(response.ErrorMessage);
                 else throw new Exception(response.Content);
-            }
-            else
-            {
-                var xmlDoc = responseToXML(response.Content);
-                var successedNode = xmlDoc.SelectSingleNode("data/Succeeded");
-                if (successedNode.InnerText.ToLower() == "false")
-                {
-                    var failureMessageNode = xmlDoc.SelectSingleNode("data/FailureMessage");
-                    throw new Exception(failureMessageNode.InnerText);
-                }
             }
         }
 
-        internal static void setExperimentRunScenarioTableRows(Int32 experimenRuntId, Int32 rowIndex, string tableName, string columnName, string columnValue)
+        internal static void setExperimentRunScenarioTableRows(Int32 experimentRunId, Int32 rowIndex, string tableName, string columnName, string columnValue)
         {
-            var client = new RestClient(Uri + "/api/Command");
+            var client = new RestClient(Uri);
             client.Timeout = -1;
-            var request = new RestRequest(Method.POST);
-            request.AddHeader("Content-Type", "multipart/form-data");
+            var request = new RestRequest("/api/v1/runs/" + experimentRunId.ToString() + "/scenarios/" + ScenarioName + "/table-data/" + tableName + "/rows", Method.PATCH);
             request.AddHeader("Authorization", "Bearer " + Token);
+
             if (String.IsNullOrWhiteSpace(AuthenticationType) == false && AuthenticationType.ToLower() != "none")
             {
                 if (UseDefaultCredentials)
@@ -254,34 +308,22 @@ namespace EditExperimentRunScenarioTable
                     client.Authenticator = new RestSharp.Authenticators.NtlmAuthenticator(Credentials);
                 }
             }
-            request.AlwaysMultipartFormData = true;
-            request.AddParameter("Type", "SetExperimentRunScenarioTableValue");
-            request.AddParameter("Command", "{\"ExperimentRunId\": " + experimenRuntId.ToString() + ",\"RowIndex\": " + rowIndex.ToString() + ",\"ScenarioName\": \"" + RunSchedulePlanScenarioName + "\",\"TableName\": \"" + tableName + "\",\"ColumnName\": \"" + columnName + "\",\"Value\": \"" + columnValue + "\"}");
+
+            request.AddJsonBody("{\"rowindex\": " + rowIndex.ToString() + ",\"columnname\": \"" + columnName + "\",\"value\": \"" + columnValue + "\"}");
 
             IRestResponse response = client.Execute(request);
-            if (response.StatusCode != System.Net.HttpStatusCode.OK)
+            if (response.StatusCode != System.Net.HttpStatusCode.NoContent)
             {
                 if (response.ErrorMessage != null) throw new Exception(response.ErrorMessage);
                 else throw new Exception(response.Content);
-            }
-            else
-            {
-                var xmlDoc = responseToXML(response.Content);
-                var successedNode = xmlDoc.SelectSingleNode("data/Succeeded");
-                if (successedNode.InnerText.ToLower() == "false")
-                {
-                    var failureMessageNode = xmlDoc.SelectSingleNode("data/FailureMessage");
-                    throw new Exception(failureMessageNode.InnerText);
-                }
             }
         }
 
-        internal static void deleteExperimentRunScenarioTableRows(Int32 experimenRuntId, Int32 rowIndex, string tableName)
+        internal static void deleteExperimentRunScenarioTableRows(Int32 experimentRunId, Int32 rowIndex, string tableName)
         {
-            var client = new RestClient(Uri + "/api/Command");
+            var client = new RestClient(Uri);
             client.Timeout = -1;
-            var request = new RestRequest(Method.POST);
-            request.AddHeader("Content-Type", "multipart/form-data");
+            var request = new RestRequest("/api/v1/runs/" + experimentRunId.ToString() + "/scenarios/" + ScenarioName + "/table-data/" + tableName + "/rows/" + rowIndex.ToString(), Method.DELETE);
             request.AddHeader("Authorization", "Bearer " + Token);
             if (String.IsNullOrWhiteSpace(AuthenticationType) == false && AuthenticationType.ToLower() != "none")
             {
@@ -294,25 +336,11 @@ namespace EditExperimentRunScenarioTable
                     client.Authenticator = new RestSharp.Authenticators.NtlmAuthenticator(Credentials);
                 }
             }
-            request.AlwaysMultipartFormData = true;
-            request.AddParameter("Type", "RemoveExperimentRunScenarioTableRow");
-            request.AddParameter("Command", "{\"ExperimentRunId\": " + experimenRuntId.ToString() + ",\"RowIndex\": " + rowIndex.ToString() + ",\"ScenarioName\": \"" + RunSchedulePlanScenarioName + "\",\"TableName\": \"" + tableName + "\"}");
-
             IRestResponse response = client.Execute(request);
-            if (response.StatusCode != System.Net.HttpStatusCode.OK)
+            if (response.StatusCode != System.Net.HttpStatusCode.NoContent)
             {
                 if (response.ErrorMessage != null) throw new Exception(response.ErrorMessage);
                 else throw new Exception(response.Content);
-            }
-            else
-            {
-                var xmlDoc = responseToXML(response.Content);
-                var successedNode = xmlDoc.SelectSingleNode("data/Succeeded");
-                if (successedNode.InnerText.ToLower() == "false")
-                {
-                    var failureMessageNode = xmlDoc.SelectSingleNode("data/FailureMessage");
-                    throw new Exception(failureMessageNode.InnerText);
-                }
             }
         }
 

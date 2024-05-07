@@ -3,10 +3,10 @@
   <Profiles />
   <Settings>
     <Setting Name="URL" Type="System.String" Scope="User">
-      <Value Profile="(Default)">https://mdtdemoserver.internal.simioportal.com</Value>
+      <Value Profile="(Default)">https://test.internal.simioportal.com:8443/</Value>
     </Setting>
     <Setting Name="PersonalAccessToken" Type="System.String" Scope="User">
-      <Value Profile="(Default)">eyJ1IjoiZ3dpcnRoQHNpbWlvLmNvbSIsInQiOiIzcFFFSWg4ZVBhZnRWRUhrVTV5ZmUzVTMram5xSUVoWVZXV3kzb0tDSjNHT1pRUTNKbC80Vk9aMzFOZDBBQ3pGQXR3NzRhSEMxM0tjRDVqUHhqcU1SQT09In0=</Value>
+      <Value Profile="(Default)">eyJ1IjoiZ3dpcnRoQHNpbWlvLmNvbSIsInQiOiI5NVpNS0s4dThiZTdOUzZGaDQzVkZ5ck5CVFg2MnFzWW1zcklLTkhzU1d5UTVoWG4zR1dFemFZWFhWRmh4Wk1oQmxLWlZSVTJMRzU5QnovZ2NGeVJEZz09In0=</Value>
     </Setting>
     <Setting Name="AuthenticationType" Type="System.String" Scope="User">
       <Value Profile="(Default)">None</Value>
@@ -23,7 +23,13 @@
     <Setting Name="ProjectName" Type="System.String" Scope="User">
       <Value Profile="(Default)">SchedulingLaborEfficiencies</Value>
     </Setting>
-    <Setting Name="RunSchedulePlanScenarioName" Type="System.String" Scope="User">
+    <Setting Name="ModelName" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Model</Value>
+    </Setting>
+    <Setting Name="ExperimentName" Type="System.String" Scope="User">
+      <Value Profile="(Default)">__Default</Value>
+    </Setting>
+    <Setting Name="ScenarioName" Type="System.String" Scope="User">
       <Value Profile="(Default)">_ModelValues</Value>
     </Setting>
   </Settings>

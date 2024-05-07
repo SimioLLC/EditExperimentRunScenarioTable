@@ -13,17 +13,43 @@ namespace EditExperimentRunScenarioTable
 {
     public partial class editExperimentRunScenarioTable : Form
     {
-        private Int32 experimentRunId = -1;
+        private Int32 modelId = 0;
+        private Int32 experimentRunId = 0;
         private String oldValue = String.Empty;
         public editExperimentRunScenarioTable()
         {
             InitializeComponent();
-            experimentRunId = getExperimentRunId();
-            var xmlDoc = SimioPortalWebAPIHelper.getModelTableSchema(experimentRunId);
+
+
+            if (Uri.TryCreate(SimioPortalWebAPIHelper.Url, UriKind.Absolute, out SimioPortalWebAPIHelper.Uri) == false)
+            {
+                throw new Exception("URL Setting in an invalid format");
+            }
+
+            if (String.IsNullOrWhiteSpace(SimioPortalWebAPIHelper.AuthenticationType) == false && SimioPortalWebAPIHelper.AuthenticationType.ToLower() != "none")
+            {
+                AddStatusMessage("Set Credentials");
+                SimioPortalWebAPIHelper.setCredentials();
+            }
+
+            AddStatusMessage("Obtain Bearer Token");
+            SimioPortalWebAPIHelper.obtainBearerToken();
+            AddStatusMessage("Find Model Id");
+            modelId = SimioPortalWebAPIHelper.findModelId();
+            if (modelId == 0) throw new Exception("Model Id Cannot Be Found");
+            AddStatusMessage("ModelId:" + modelId.ToString());
+            AddStatusMessage("Find Experiment Ids");
+            Int32 experimentId = SimioPortalWebAPIHelper.findExperimentId(modelId);
+            if (experimentId == 0) throw new Exception("Experiment Id Cannot Be Found");
+            AddStatusMessage("ExperimentId:" + experimentId.ToString());
+            experimentRunId = SimioPortalWebAPIHelper.findExperimentRunId(experimentId);
+            AddStatusMessage("ExperimentRunId:" + experimentRunId.ToString());
+
+            var xmlDoc = SimioPortalWebAPIHelper.getModelTableSchema(modelId);
             var dataNodes = xmlDoc.SelectSingleNode("data");
             foreach (XmlNode itemNodes in dataNodes)
             {
-                XmlNodeList tableNameNode = ((XmlElement)itemNodes).GetElementsByTagName("TableName");
+                XmlNodeList tableNameNode = ((XmlElement)itemNodes).GetElementsByTagName("name");
                 tableComboBox.Items.Add(tableNameNode[0].InnerText);
             }
         }
@@ -67,29 +93,6 @@ namespace EditExperimentRunScenarioTable
                 MessageBox.Show(ex.Message);
                 tableDataGridView.Rows[e.RowIndex].Cells[e.ColumnIndex].Value = oldValue;                
             }
-        }
-
-        private Int32 getExperimentRunId()
-        {            
-            if (Uri.TryCreate(SimioPortalWebAPIHelper.Url, UriKind.Absolute, out SimioPortalWebAPIHelper.Uri) == false)
-            {
-                throw new Exception("URL Setting in an invalid format");
-            }
-
-            if (String.IsNullOrWhiteSpace(SimioPortalWebAPIHelper.AuthenticationType) == false && SimioPortalWebAPIHelper.AuthenticationType.ToLower() != "none")
-            {
-                AddStatusMessage("Set Credentials");
-                SimioPortalWebAPIHelper.setCredentials();
-            }
-
-            AddStatusMessage("Obtain Bearer Token");
-            SimioPortalWebAPIHelper.obtainBearerToken();
-            AddStatusMessage("Find Experiment Ids");
-            Int32[] returnInt32 = SimioPortalWebAPIHelper.findExperimentIds();
-            Int32 experimentRunId = returnInt32[0];
-            Int32 experimentId = returnInt32[1];
-            AddStatusMessage("ExperimentRunId:" + experimentRunId.ToString() + "|ExperimentId:" + experimentId.ToString());
-            return experimentRunId;
         }
 
         private void AddStatusMessage(string message)

@@ -12,7 +12,7 @@ namespace EditExperimentRunScenarioTable.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "17.4.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "17.9.0.0")]
     internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
         
         private static Settings defaultInstance = ((Settings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Settings())));
@@ -25,7 +25,7 @@ namespace EditExperimentRunScenarioTable.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("https://mdtdemoserver.internal.simioportal.com")]
+        [global::System.Configuration.DefaultSettingValueAttribute("https://test.internal.simioportal.com:8443/")]
         public string URL {
             get {
                 return ((string)(this["URL"]));
@@ -37,8 +37,8 @@ namespace EditExperimentRunScenarioTable.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("eyJ1IjoiZ3dpcnRoQHNpbWlvLmNvbSIsInQiOiIzcFFFSWg4ZVBhZnRWRUhrVTV5ZmUzVTMram5xSUVoW" +
-            "VZXV3kzb0tDSjNHT1pRUTNKbC80Vk9aMzFOZDBBQ3pGQXR3NzRhSEMxM0tjRDVqUHhqcU1SQT09In0=")]
+        [global::System.Configuration.DefaultSettingValueAttribute("eyJ1IjoiZ3dpcnRoQHNpbWlvLmNvbSIsInQiOiI5NVpNS0s4dThiZTdOUzZGaDQzVkZ5ck5CVFg2MnFzW" +
+            "W1zcklLTkhzU1d5UTVoWG4zR1dFemFZWFhWRmh4Wk1oQmxLWlZSVTJMRzU5QnovZ2NGeVJEZz09In0=")]
         public string PersonalAccessToken {
             get {
                 return ((string)(this["PersonalAccessToken"]));
@@ -110,13 +110,37 @@ namespace EditExperimentRunScenarioTable.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("_ModelValues")]
-        public string RunSchedulePlanScenarioName {
+        [global::System.Configuration.DefaultSettingValueAttribute("Model")]
+        public string ModelName {
             get {
-                return ((string)(this["RunSchedulePlanScenarioName"]));
+                return ((string)(this["ModelName"]));
             }
             set {
-                this["RunSchedulePlanScenarioName"] = value;
+                this["ModelName"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("__Default")]
+        public string ExperimentName {
+            get {
+                return ((string)(this["ExperimentName"]));
+            }
+            set {
+                this["ExperimentName"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("_ModelValues")]
+        public string ScenarioName {
+            get {
+                return ((string)(this["ScenarioName"]));
+            }
+            set {
+                this["ScenarioName"] = value;
             }
         }
     }

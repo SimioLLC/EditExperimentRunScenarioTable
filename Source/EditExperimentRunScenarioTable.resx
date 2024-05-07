@@ -120,30 +120,31 @@
   <data name="stylesheetTextBox.Text" xml:space="preserve">
     <value>&lt;?xml version="1.0" encoding="utf-8"?&gt;
 &lt;xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform"&gt;
-  &lt;xsl:output method="xml" indent="yes"/&gt;
-
-  &lt;xsl:template match="/data"&gt;
-    &lt;Root&gt;
-      &lt;xsl:for-each select="items"&gt;
-        &lt;Items&gt;
-          &lt;xsl:for-each select="Properties"&gt;
-            &lt;xsl:element name="{Name}"&gt;
-              &lt;xsl:for-each select="./text()"&gt;
-              &lt;/xsl:for-each&gt;
-             &lt;xsl:value-of select="Value/."/&gt;
-            &lt;/xsl:element&gt;
-          &lt;/xsl:for-each&gt;
-          &lt;xsl:for-each select="States"&gt;
-            &lt;xsl:element name="{Name}"&gt;
-              &lt;xsl:for-each select="./text()"&gt;
-              &lt;/xsl:for-each&gt;
-             &lt;xsl:value-of select="Value/."/&gt;
-            &lt;/xsl:element&gt;
-          &lt;/xsl:for-each&gt;
-        &lt;/Items&gt;
-      &lt;/xsl:for-each&gt;
-    &lt;/Root&gt;
-  &lt;/xsl:template&gt;
-&lt;/xsl:stylesheet&gt;</value>
+    &lt;xsl:output method="xml" indent="yes"/&gt;
+    
+    &lt;xsl:template match="/data"&gt;
+        &lt;Root&gt;
+            &lt;xsl:for-each select="items"&gt;
+                &lt;Items&gt;
+                    &lt;xsl:for-each select="properties"&gt;
+                        &lt;xsl:element name="{name}"&gt;
+                            &lt;xsl:for-each select="./text()"&gt;
+                            &lt;/xsl:for-each&gt;
+                            &lt;xsl:value-of select="value/."/&gt;
+                        &lt;/xsl:element&gt;
+                    &lt;/xsl:for-each&gt;
+                    &lt;xsl:for-each select="states"&gt;n
+                        &lt;xsl:element name="{name}"&gt;
+                            &lt;xsl:for-each select="./text()"&gt;
+                            &lt;/xsl:for-each&gt;
+                            &lt;xsl:value-of select="value/."/&gt;
+                        &lt;/xsl:element&gt;
+                    &lt;/xsl:for-each&gt;
+                &lt;/Items&gt;
+            &lt;/xsl:for-each&gt;
+        &lt;/Root&gt;
+    &lt;/xsl:template&gt;
+&lt;/xsl:stylesheet&gt;
+</value>
   </data>
 </root>

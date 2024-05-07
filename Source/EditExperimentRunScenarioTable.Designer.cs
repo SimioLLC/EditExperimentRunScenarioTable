@@ -118,7 +118,7 @@ namespace EditExperimentRunScenarioTable
             this.tableComboBox.TabIndex = 12;
             this.tableComboBox.SelectedIndexChanged += new System.EventHandler(this.tableComboBox_SelectedIndexChanged);
             // 
-            // urlTextBox
+            // editExperimentRunScenarioTable
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -131,7 +131,7 @@ namespace EditExperimentRunScenarioTable
             this.Controls.Add(this.deleteButton);
             this.Controls.Add(this.insertButton);
             this.Controls.Add(this.tableDataGridView);
-            this.Name = "urlTextBox";
+            this.Name = "editExperimentRunScenarioTable";
             this.Text = "Form1";
             ((System.ComponentModel.ISupportInitialize)(this.tableDataGridView)).EndInit();
             this.ResumeLayout(false);
